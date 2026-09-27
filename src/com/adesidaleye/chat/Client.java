@@ -13,12 +13,12 @@ public class Client {
         try (Socket socket = new Socket("localhost", 8080)) {
             Scanner scanner = new Scanner(System.in);
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-            BufferedReader server = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
             Thread listnerThread = new Thread(() -> {
                 try {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String msg;
-                    while ((msg = server.readLine()) != null) {
+                    while ((msg = in.readLine()) != null) {
                         System.out.println(msg);
                     }
                 } catch (IOException e) {
@@ -28,7 +28,7 @@ public class Client {
             listnerThread.start();
 
             while (true) {
-                System.out.print("Enter message: ");
+                System.out.println("Enter message: ");
                 out.println(scanner.nextLine());
             }
         }
