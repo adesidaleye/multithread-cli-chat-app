@@ -12,11 +12,18 @@ public class Client {
     public static void main(String[] args) {
         try (Socket socket = new Socket("localhost", 8080)) {
             Scanner scanner = new Scanner(System.in);
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
 
+            // reads prompt and sends username before starting thread
+            String prompt = in.readLine();
+            System.out.println(prompt);
+            String username = scanner.nextLine();
+            out.println(username);
+
+            // separate thread just for listening, so incoming messages can print without waiting for this client message
             Thread listnerThread = new Thread(() -> {
                 try {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String msg;
                     while ((msg = in.readLine()) != null) {
                         System.out.println(msg);
@@ -28,8 +35,13 @@ public class Client {
             listnerThread.start();
 
             while (true) {
-                System.out.println("Enter message: ");
-                out.println(scanner.nextLine());
+                // System.out.println("Enter message: ");
+                String message = scanner.nextLine();
+                out.println(message);
+
+                if (message.equals("/quit")) {
+                    break;
+                }
             }
         }
         catch (UnknownHostException e) {
