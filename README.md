@@ -41,7 +41,7 @@ This needs the server and at least one client running as **separate processes**,
 
 ## Architecture
 
-TBD
+![System Design](./assets/chat_app_system.svg)
 
 **The core design idea:** each connected client gets its own thread on the server, so one slow or quiet client never blocks another. All those threads share one list (`clientWriters`) — when any client sends a message, that client's thread loops through the *entire* shared list and writes the message to every connected client's output stream. `CopyOnWriteArrayList` is used specifically because multiple threads add/remove/iterate over this list concurrently — a plain `ArrayList` isn't safe under that kind of concurrent access.
 
